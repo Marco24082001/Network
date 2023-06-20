@@ -28,6 +28,8 @@ external-chaincode/
 install-fabric.sh
 ci/
 
+organizations/
+
 .DS_Store
 node_modules
 /dist
