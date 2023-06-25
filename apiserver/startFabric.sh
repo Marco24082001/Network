@@ -20,8 +20,8 @@ rm -rf wallet/*
 # launch network; create channel and join peer to channel
 pushd ../test-network
 ./network.sh down
-# ./network.sh up createChannel -c fabcharitychannel -ca -s couchdb
-./network.sh up createChannel -c fabcharitychannel -s couchdb
+./network.sh up createChannel -c fabcharitychannel -ca -s couchdb
+# ./network.sh up createChannel -c fabcharitychannel -s couchdb
 ./network.sh deployCC -c fabcharitychannel -ccn fabcharity -ccv 1 -cci initLedger -ccl ${CC_SRC_LANGUAGE} -ccp ${CC_FABCHARITY_SRC_PATH}
 popd
 

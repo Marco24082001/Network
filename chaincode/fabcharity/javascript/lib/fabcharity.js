@@ -15,7 +15,7 @@ class FabCharity extends Contract {
     }
 
     async queryAsset(ctx, id) {
-        const assetAsBytes = await ctx.stub.getState(id); // get the car from chaincode state
+        const assetAsBytes = await ctx.stub.getState(id);
         if (!assetAsBytes || assetAsBytes.length === 0) {
             throw new Error(`${id} does not exist`);
         }
@@ -24,7 +24,7 @@ class FabCharity extends Contract {
     }
 
     async createAsset(ctx, id, hash_value) {
-        console.info('============= START : Create Car ===========');
+        console.info('============= START : Create Asset ===========');
 
         const asset = {
             docType: 'asset',
@@ -32,10 +32,10 @@ class FabCharity extends Contract {
         };
 
         await ctx.stub.putState(id, Buffer.from(JSON.stringify(asset)));
-        console.info('============= END : Create Car ===========');
+        console.info('============= END : Create Asset ===========');
     }
 
-    async queryAllassets(ctx) {
+    async queryAllAssets(ctx) {
         const startKey = '';
         const endKey = '';
         const allResults = [];
