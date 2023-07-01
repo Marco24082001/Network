@@ -34,8 +34,6 @@ app.get('/api/queryallassets', async function (req, res) {
         const contract = network.getContract('fabcharity');
 
         // Evaluate the specified transaction.
-        // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR4')
-        // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
         const result = await contract.evaluateTransaction('queryAllAssets');
         console.log(JSON.parse(result)[0]["Record"]);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
@@ -43,7 +41,6 @@ app.get('/api/queryallassets', async function (req, res) {
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({ error: error });
-        process.exit(1);
     }
 });
 
@@ -73,15 +70,13 @@ app.get('/api/query/:id', async function (req, res) {
         // Get the contract from the network.
         const contract = network.getContract('fabcharity');
         // Evaluate the specified transaction.
-        // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR4')
-        // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
         const result = await contract.evaluateTransaction('queryAsset', req.params.id);
+        console.log('thanhvi')
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({ response: result.toString() });
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({ error: error });
-        process.exit(1);
     }
 });
 
@@ -111,19 +106,14 @@ app.post('/api/addasset/', async function (req, res) {
         // Get the contract from the network.
         const contract = network.getContract('fabcharity');
         // Submit the specified transaction.
-        // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
-        // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR10', 'Dave')
-        console.log('thanhbi')
         console.log(req.body)
         await contract.submitTransaction('createAsset', req.body.id, req.body.hash);
-        // res.status(200).json({response: "Transac/tion has been submitted"})
-        res.status(200).json({ response: 'thanhvi' });
+        res.status(200).json({ response: 'Transaction has been submitted' });
 
         // Disconnect from the gateway.
         await gateway.disconnect();
     } catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
-        process.exit(1);
     }
 })
 
@@ -163,7 +153,7 @@ app.put('/api/changeAsset/:id', async function (req, res) {
         await gateway.disconnect();
     } catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
-        process.exit(1);
+        // process.exit(1);
     }
 })
 
