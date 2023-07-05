@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
+const { validateToken } = require("./middlewares/authmiddleware");
 // Setting for Hyperledger Fabric
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
@@ -35,7 +36,7 @@ app.get('/api/queryallassets', async function (req, res) {
 
         // Evaluate the specified transaction.
         const result = await contract.evaluateTransaction('queryAllAssets');
-        console.log(JSON.parse(result)[0]["Record"]);
+        console.log(JSON.parse(result)[0]["Record"]);   
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({ response: result.toString() });
     } catch (error) {
@@ -44,7 +45,7 @@ app.get('/api/queryallassets', async function (req, res) {
     }
 });
 
-app.get('/api/query/:id', async function (req, res) {
+app.get('/api/query/:id', validateToken, async function (req, res) {
     try {
         const ccpPath = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
         const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
