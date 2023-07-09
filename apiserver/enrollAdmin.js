@@ -13,6 +13,8 @@ const path = require('path');
 
 async function main() {
     try {
+        
+        // ADMINISTRATOR
         // load the network configuration
         const ccpPathOrg1 = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
         const ccpOrg1 = JSON.parse(fs.readFileSync(ccpPathOrg1, 'utf8'));
@@ -23,7 +25,7 @@ async function main() {
         const caOrg1 = new FabricCAServices(caInfoOrg1.url, { trustedRoots: caTLSCACertsOrg1, verify: false }, caInfoOrg1.caName);
 
         // Create a new file system based wallet for managing identities.
-        const walletPathOrg1 = path.join(process.cwd(), 'wallet');
+        const walletPathOrg1 = path.join(process.cwd(), 'wallet/administrator');
         const walletOrg1 = await Wallets.newFileSystemWallet(walletPathOrg1);
         console.log(`Wallet path: ${walletPathOrg1}`);
 
@@ -45,10 +47,10 @@ async function main() {
             type: 'X.509',
         };
         await walletOrg1.put('adminOrg1', x509IdentityOrg1);
-        console.log('Successfully enrolled admin user "adminOrg1" and imported it into the wallet');
+        console.log('Successfully enrolled admin user "administratorOrg" and imported it into the wallet');
 
         
-        // org2
+        // FUNDRAISER
         // load the network configuration
         const ccpPathOrg2 = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org2.example.com', 'connection-org2.json');
         const ccpOrg2 = JSON.parse(fs.readFileSync(ccpPathOrg2, 'utf8'));
@@ -59,7 +61,7 @@ async function main() {
         const caOrg2 = new FabricCAServices(caInfoOrg2.url, { trustedRoots: caTLSCACertsOrg2, verify: false }, caInfoOrg2.caName);
 
         // Create a new file system based wallet for managing identities.
-        const walletPathOrg2 = path.join(process.cwd(), 'wallet');
+        const walletPathOrg2 = path.join(process.cwd(), 'wallet/fundraiser');
         const walletOrg2 = await Wallets.newFileSystemWallet(walletPathOrg2);
         console.log(`Wallet path: ${walletPathOrg2}`);
 
@@ -81,10 +83,45 @@ async function main() {
             type: 'X.509',
         };
         await walletOrg2.put('adminOrg2', x509IdentityOrg2);
-        console.log('Successfully enrolled admin user "adminOrg2" and imported it into the wallet');
+        console.log('Successfully enrolled admin user "fundraiserOrg" and imported it into the wallet');
+
+        // SUPPORTER
+        // load the network configuration
+        const ccpPathOrg3 = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org3.example.com', 'connection-org3.json');
+        const ccpOrg3 = JSON.parse(fs.readFileSync(ccpPathOrg3, 'utf8'));
+
+        // Create a new CA client for interacting with the CA.
+        const caInfoOrg3 = ccpOrg3.certificateAuthorities['ca.org3.example.com'];
+        const caTLSCACertsOrg3 = caInfoOrg3.tlsCACerts.pem;
+        const caOrg3 = new FabricCAServices(caInfoOrg3.url, { trustedRoots: caTLSCACertsOrg3, verify: false }, caInfoOrg3.caName);
+
+        // Create a new file system based wallet for managing identities.
+        const walletPathOrg3 = path.join(process.cwd(), 'wallet/supporter');
+        const walletOrg3 = await Wallets.newFileSystemWallet(walletPathOrg3);
+        console.log(`Wallet path: ${walletPathOrg3}`);
+
+        // Check to see if we've already enrolled the admin user.
+        const identityOrg3 = await walletOrg3.get('adminOrg3');
+        if (identityOrg3) {
+            console.log('An identity for the admin user "admin" already exists in the wallet');
+            return;
+        }
+
+        // Enroll the admin user, and import the new identity into the wallet.
+        const enrollmentOrg3 = await caOrg3.enroll({ enrollmentID: 'admin', enrollmentSecret: 'adminpw' });
+        const x509IdentityOrg3 = {
+            credentials: {
+                certificate: enrollmentOrg3.certificate,
+                privateKey: enrollmentOrg3.key.toBytes(),
+            },
+            mspId: 'Org3MSP',
+            type: 'X.509',
+        };
+        await walletOrg3.put('adminOrg3', x509IdentityOrg3);
+        console.log('Successfully enrolled admin user "supporterOrg" and imported it into the wallet');
 
     } catch (error) {
-        console.error(`Failed to enroll admin user "adminOrg1 and adminOrg2": ${error}`);
+        console.error(`Failed to enroll admin user "adminOrg1, adminOrg2 and adminOrg3": ${error}`);
         process.exit(1);
     }
 }
